@@ -43,6 +43,9 @@ ALPHABET = list("abcdefghijklmnopqrstuvwxyz")
 alphabet_mesh = np.meshgrid(ALPHABET,ALPHABET)[0]
 ALL_FINDICES = np.char.add(alphabet_mesh.T, alphabet_mesh).flatten()
 
+MAX_NUM_DATA = 10 # Maximum possible number of spectra to upload (10 is reccomended)
+# if MAX_NUM_DATA>10 errors will arise in summaryFrame as only 10 plots are displayed --> must fix later
+
 #Plot constants
 FIG_WID = 2.5
 XS_EKE = np.arange(0,5,0.002)
@@ -91,11 +94,14 @@ class streamingPotential:
         #Data
         self.date = tk.StringVar(self.master,value=DEFAULT_DATE)
         
-        self.file_indices = [tk.StringVar(self.master) for _ in range(10)]
-        self.positions_strings = [tk.StringVar(self.master,value=value) for value in DEFAULT_POSITIONS]
+        self.file_indices = [tk.StringVar(self.master) for _ in range(MAX_NUM_DATA)]
+        # Create a list of strings with len MAX_NUM_DATA. If len(DEFAULT_POSITIONS) is grater than MAX_NUM_DATA
+        # it will be cutoff, otherwise empty strings will be appended
+        position_strings = DEFAULT_POSITIONS[:MAX_NUM_DATA] + ["" for _ in range(MAX_NUM_DATA-len(DEFAULT_POSITIONS[:MAX_NUM_DATA]))]
+        self.positions_strings = [tk.StringVar(self.master,value=value) for value in position_strings]
 
         self.loaded_confirm_labels = []
-        self.spectra = np.empty((10),dtype=np.ndarray)
+        self.spectra = np.empty((MAX_NUM_DATA),dtype=np.ndarray)
 
     @property
     def cal_params(self):
@@ -120,7 +126,7 @@ class streamingPotential:
             start = np.where(ALL_FINDICES==start_index)[0][0] # output is tuple of array. I want integer
         except IndexError:
             return
-        for i in range(1,10):
+        for i in range(1,MAX_NUM_DATA):
             #Check if there are positions
             try:
                 float(self.positions_strings[i].get())
@@ -399,10 +405,10 @@ class dataFrame(tk.Frame):
 
         #Load buttons
         tk.Button(self,text='Load all',command=self.master.streamingPotential.load_all_files,width=10).grid(row=3,column=3,pady=5,padx=5,sticky='nswe')
-        for ind in range(10):
+        for ind in range(MAX_NUM_DATA):
             tk.Button(self,text='Load',command=lambda ind=ind:self.master.streamingPotential.load_file(ind),width=10).grid(row=4+ind,column=3,pady=5,padx=5,sticky='nswe')
         #Loaded?
-        for ind in range(10):
+        for ind in range(MAX_NUM_DATA):
             label = tk.Label(self,text='X',bg=self.parent['bg'])
             label.grid(row=4+ind,column=4,pady=5,padx=5,sticky='nswe')
             self.master.streamingPotential.loaded_confirm_labels.append(label)
