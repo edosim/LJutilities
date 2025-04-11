@@ -4,11 +4,11 @@ DEFAULT_POSITIONS :
 - '0.10'
 - '0.20'
 - '0.30'
+- '0.40'
 - '0.50'
 - '0.74'
 - '1.00'
-- '1.20'
-- '1.40'
+- ''
 - ''
 - ''
 DEFAULT_DATE : '191224'
@@ -19,5 +19,5 @@ DEFAULT_CAL_PARAMS :
 - 0.63256
 - 41.77349
 - 1.03415
-DEFAULT_FOLDER : 'C:\Users\edoar\OneDrive - University College London\PhD\pCE\LiquidJet\Results\241219'
+DEFAULT_FOLDER : 'C:\Users\edoardo\OneDrive - University College London\PhD\pCE\LiquidJet\Results\241219'
 DEFAULT_WAVELENGTH : 250
