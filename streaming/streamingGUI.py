@@ -44,7 +44,9 @@ alphabet_mesh = np.meshgrid(ALPHABET,ALPHABET)[0]
 ALL_FINDICES = np.char.add(alphabet_mesh.T, alphabet_mesh).flatten()
 
 MAX_NUM_DATA = 10 # Maximum possible number of spectra to upload (10 is reccomended)
-# if MAX_NUM_DATA>10 errors will arise in summaryFrame as only 10 plots are displayed --> must fix later
+# if MAX_NUM_DATA>10 errors will arise in summaryFrame as only 10 plots are displayed --> maybe find fix later
+if not isinstance(MAX_NUM_DATA, int) or MAX_NUM_DATA < 1 or MAX_NUM_DATA > 10:
+    raise ValueError("The value of MAX_NUM_DATA must be of type int and between 1 and 10.")
 
 #Plot constants
 FIG_WID = 2.5
