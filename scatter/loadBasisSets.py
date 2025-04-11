@@ -35,7 +35,7 @@ indexGuide = np.array(indexGuide)
 #indexGuide.shape
 
 print("Loading basis sets...")
-h5File = h5py.File('basisSets.hdf5', 'r')
+h5File = h5py.File('scatter/basisSets.hdf5', 'r')
 allBasisSets = h5File['allBasisSets']
 allBasisSetsUnnorm = h5File['allBasisSetsUnnorm']
 print("Basis sets loaded")
