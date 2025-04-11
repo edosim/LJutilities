@@ -255,7 +255,7 @@ class streamingGUI(tk.Tk):
         widgetFont = tk.font.Font(family="Helvetica",size=FONT_SIZE)
         self.option_add("*Font", widgetFont)
         # Symbols/icons
-        self.saveIcon_image = tk.PhotoImage(file=r"Icons\save_20dp_000000_FILL0_wght400_GRAD0_opsz20.png")
+        self.saveIcon_image = tk.PhotoImage(file=r"icons\save_20dp_000000_FILL0_wght400_GRAD0_opsz20.png")
         self.saveIcon_image=self.saveIcon_image.subsample(ICON_SUBSAMPLE)
 
 

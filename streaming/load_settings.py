@@ -1,7 +1,7 @@
 import yaml
 
 # YAML file path
-yaml_file = 'StreamingPotential\settings.yaml'
+yaml_file = 'streaming\settings.yaml'
 
 # Reading YAML data from file
 with open(yaml_file, 'r') as f:
