@@ -12,6 +12,15 @@ app.geometry("+60+60")
 FONT_SIZE = 9
 TITLE_FONT_SIZE = 20
 SUBTITLE_FONT_SIZE = 16
+###
+
+
+def _on_tab_changed(event):
+    event.widget.update_idletasks()
+
+    tab = event.widget.nametowidget(event.widget.select())
+    event.widget.configure(height=tab.winfo_reqheight(),
+                           width=tab.winfo_reqwidth())
 
 #Style of notebook tab labels
 style = ttk.Style()
@@ -33,6 +42,9 @@ streamingFrame.pack(fill='both', expand=True)
 
 notebook.add(streamingFrame, text='Streaming')
 notebook.add(scatterFrame, text='Scatter')
+
+# Bind resize upon tab change
+notebook.bind("<<NotebookTabChanged>>", _on_tab_changed)
 
 # Window settings
 app.geometry("+60+60")
