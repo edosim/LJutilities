@@ -3,6 +3,7 @@ from tkinter import ttk
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.ticker import MultipleLocator, AutoMinorLocator
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from idlelib.tooltip import Hovertip
@@ -30,6 +31,19 @@ WINDOW_COLOR = "#F0F0F0"
 MAIN_BUTTON_FONT = ('Helvetica', 9, 'bold')
 MAIN_BUTTON_COLOR = "#dddddd"#"#ced1d7"
 INFO_ICON_SUBSAMPLE = 2
+
+
+## mpl rcParams
+rcParams = {'figure.dpi':200,
+            'font.family':'Arial',
+            'font.size': 10.0,
+            'legend.fontsize': 'medium', #equal to font.size
+            'axes.labelsize':'medium',
+            'legend.handletextpad': 0.8,
+            'legend.labelspacing': 0.5,
+            'lines.linewidth': 1.5,
+            'lines.markersize': 3
+            }
 
 ###
 #This will color the border blue
@@ -581,6 +595,8 @@ class plotFrame(tk.Frame):
     def __init__(self,master):
         super().__init__(master)
         self.master = master
+        # Update rcParams
+        mpl.rcParams.update(rcParams)
         ### Initialise fig
         self.fig = plt.figure(figsize=(4, 3.2), dpi=200)
         self.canvas=FigureCanvasTkAgg(self.fig, master=self)  
@@ -629,6 +645,13 @@ if __name__ =="__main__":
     scatterFrame = scatterGUI(app)
     scatterFrame.pack()
 
+    rcParams = ['figure.dpi','font.family','font.size','legend.fontsize','axes.labelsize',
+                'legend.handletextpad','legend.labelspacing','lines.linewidth','lines.markersize']
+    for rcParam in rcParams:
+        print(rcParam, mpl.rcParams[rcParam])
     app.geometry("+60+60")
     app.wm_title("Scatter")
     app.mainloop()
+
+
+

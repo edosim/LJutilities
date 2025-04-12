@@ -66,16 +66,16 @@ zerosubstr = u'\u2080'
 BLACK = "#565656"
 
 #### MPL rcParams ######
-mpl.rcParams['figure.dpi'] = 200
-mpl.rcParams['font.family'] = 'Arial'
-mpl.rcParams['font.size'] = 5
-mpl.rcParams['legend.fontsize'] = 6
-mpl.rcParams['axes.labelsize'] = 'medium' #equal to font.size
-mpl.rcParams['legend.handletextpad'] = 0.3
-mpl.rcParams['legend.labelspacing'] = 0.3
-mpl.rcParams['lines.linewidth'] = 1
-mpl.rcParams['lines.markersize'] = 3
-
+rcParams = {'figure.dpi':200,
+            'font.family':'Arial',
+            'font.size':5.0,
+            'legend.fontsize': 6, 
+            'axes.labelsize':'medium', #equal to font.size
+            'legend.handletextpad': 0.3,
+            'legend.labelspacing': 0.3,
+            'lines.linewidth': 1,
+            'lines.markersize': 3
+            }
 
 ###
 #This will color the border red
@@ -428,6 +428,9 @@ class summaryFrame(tk.Frame):
         self.streamingPotential = master.streamingPotential
         self.rowconfigure(0, weight=1)
 
+        # Update rcParams
+        mpl.rcParams.update(rcParams)
+        # Initialise figure
         self.fig = mplfigure.Figure(figsize=(FIG_WID,1),dpi=200)
         self.fig.patch.set_color(WINDOW_COLOR)
         self.canvas=FigureCanvasTkAgg(self.fig, master=self)  
@@ -512,7 +515,9 @@ class fittingFrame(tk.Frame):
         self.master = master 
         self.parent = parent
         self.streamingPotential = master.streamingPotential
-        #Figure
+        # Update rcParams
+        mpl.rcParams.update(rcParams)
+        # Initialise figure
         self.fig = mplfigure.Figure(figsize=(FIG_WID, FIG_WID*0.75), dpi=200)
         self.fig.patch.set_color(WINDOW_COLOR)
         self.canvas=FigureCanvasTkAgg(self.fig, master=self)  
@@ -642,7 +647,9 @@ class resultsFrame(tk.Frame):
         self.master = master 
         self.parent = parent
         self.streamingPotential = master.streamingPotential
-
+        # Update rcParams
+        mpl.rcParams.update(rcParams)
+        #Initialise figure
         self.fig = mplfigure.Figure(figsize=(FIG_WID, FIG_WID*0.75), dpi=200)
         self.fig.patch.set_color(WINDOW_COLOR)
         self.canvas=FigureCanvasTkAgg(self.fig, master=self)  
