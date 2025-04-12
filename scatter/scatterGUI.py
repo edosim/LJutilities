@@ -7,8 +7,14 @@ import numpy as np
 from idlelib.tooltip import Hovertip
 from ctypes import windll
 ####
-from . import loadBasisSets as BS
-from . import fitRetrieval as FR
+if __name__=="__main__":
+    # Direct import
+    import loadBasisSets as BS
+    import fitRetrieval as FR
+else:
+    #Relative import
+    from . import loadBasisSets as BS
+    from . import fitRetrieval as FR
 ###
 
 #fix blurry text
@@ -251,12 +257,10 @@ class photoelectronSpectrum:
 class scatterGUI(tk.Frame):
     def __init__(self,master):
         super().__init__(master)
-        # self.wm_title("Scatter")
-        # self.geometry("+60+60")
+        self.root = self.winfo_toplevel()
 
         #Initialise UVspectrum
         self.UVspectrum = photoelectronSpectrum(self)
-
 
         #'i' image
         self.infoIcon_image = tk.PhotoImage(file=r"Icons\info_20dp_5F6368_FILL0_wght400_GRAD0_opsz20.png")
@@ -276,14 +280,14 @@ class scatterGUI(tk.Frame):
         self.titleFrame = titleFrame(self)
         self.fileInfoFrame = fileInfoFrame(self)
         self.plotFrame = plotFrame(self)
-        self.menuBar = menuBar(self)
+        self.menuBar = menuBar(self.root,self)
         self.settingsFrame = settingsFrame(self)
 
         self.titleFrame.grid(row=0,column=0,columnspan=3,padx=10,pady=10,sticky='nswe')
         self.fileInfoFrame.grid(row=1,column=0,padx=10,pady=10,sticky='nswe')
         self.plotFrame.grid(row=1,column=1,padx=10,pady=10,sticky='nswe')
         self.settingsFrame.grid(row=1,column=2,padx=10,pady=1,sticky='nswe')
-        # self.config(menu=self.menuBar)
+        self.root.config(menu=self.menuBar)
 
         #Add reference to self.settingsFrame to UVspectrum
         self.UVspectrum.settingsFrame = self.settingsFrame
@@ -556,8 +560,9 @@ class retrievalSettingsFrame(tk.Frame):
         self.infoIconCrossSectionSet_hover = CustomHovertip(self.infoIconCrossSectionSet_label,'Will come up with better naming system')
 
 class menuBar(tk.Menu):
-    def __init__(self,master):
-        super().__init__(master)
+    def __init__(self,root,master):
+        super().__init__(root)
+        self.root = root
         self.master = master
         self.UVspectrum = self.master.UVspectrum
         
@@ -613,5 +618,11 @@ class fileInfoFrame(tk.Frame):
 
 
 if __name__ =="__main__":
-    app = scatterGUI()
+
+    app = tk.Tk()
+    scatterFrame = scatterGUI(app)
+    scatterFrame.pack()
+
+    app.geometry("+60+60")
+    app.wm_title("Scatter")
     app.mainloop()

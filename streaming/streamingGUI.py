@@ -11,11 +11,15 @@ import yaml
 from ctypes import windll
 
 import time
-####
-# from StreamingPotential folder
-from .SPfunctions import * 
-#Default values
-from .load_settings import *
+
+if __name__=="__main__":
+    # Direct import
+    from SPfunctions import *
+    from load_settings import *
+else:
+    #Relative import
+    from .SPfunctions import * 
+    from .load_settings import *
 
 
 #fix blurry text
@@ -250,11 +254,10 @@ class SPspectrum:
         print(self.fit_params)
 
 
-class streamingGUI(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.wm_title("Streaming potential")
-        self.geometry("+60+60")
+class streamingGUI(tk.Frame):
+    def __init__(self,master):
+        super().__init__(master)
+        self.root = self.winfo_toplevel()
 
         #Initialise streaming potential
         self.streamingPotential = streamingPotential(self)
@@ -277,8 +280,8 @@ class streamingGUI(tk.Tk):
         self.leftFrame.grid(row=0,column=0,padx=(0,MAIN_FRAME_PADDING),pady=0,sticky='nswe')
         self.rightFrame.grid(row=0,column=2,padx=MAIN_FRAME_PADDING,pady=0,sticky='nswe')
 
-        self.menuBar = menuBar(self)
-        self.config(menu=self.menuBar)
+        self.menuBar = menuBar(self.root,self)
+        self.root.config(menu=self.menuBar)
 
 
 
@@ -752,8 +755,9 @@ class resultPanelFrame(tk.Frame):
 
 
 class menuBar(tk.Menu):
-    def __init__(self,master):
-        super().__init__(master)
+    def __init__(self,root,master):
+        super().__init__(root)
+        self.root = root
         self.master = master
         self.streamingPotential = self.master.streamingPotential
         
@@ -768,5 +772,11 @@ class menuBar(tk.Menu):
 
 
 if __name__ =="__main__":
-    app = streamingGUI()
+
+    app = tk.Tk()
+    streamingFrame = streamingGUI(app)
+    streamingFrame.pack()
+
+    app.geometry("+60+60")
+    app.wm_title("Streaming")
     app.mainloop()
