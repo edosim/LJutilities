@@ -248,11 +248,11 @@ class photoelectronSpectrum:
                 self.eBEStrings[ind].set("")
 
 
-class scatterGUI(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.wm_title("Scatter")
-        self.geometry("+60+60")
+class scatterGUI(tk.Frame):
+    def __init__(self,master):
+        super().__init__(master)
+        # self.wm_title("Scatter")
+        # self.geometry("+60+60")
 
         #Initialise UVspectrum
         self.UVspectrum = photoelectronSpectrum(self)
@@ -283,7 +283,7 @@ class scatterGUI(tk.Tk):
         self.fileInfoFrame.grid(row=1,column=0,padx=10,pady=10,sticky='nswe')
         self.plotFrame.grid(row=1,column=1,padx=10,pady=10,sticky='nswe')
         self.settingsFrame.grid(row=1,column=2,padx=10,pady=1,sticky='nswe')
-        self.config(menu=self.menuBar)
+        # self.config(menu=self.menuBar)
 
         #Add reference to self.settingsFrame to UVspectrum
         self.UVspectrum.settingsFrame = self.settingsFrame
