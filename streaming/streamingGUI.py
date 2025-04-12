@@ -290,7 +290,7 @@ class streamingGUI(tk.Frame):
 
 
 class leftFrame(tk.Frame):
-    """This only contains settings frame --> change!"""
+    """This only contains settings frame but helps with padding"""
     def __init__(self,master):
         super().__init__(master,highlightbackground="red", highlightthickness=0,bg=ACCENT_COLOR)
         self.master = master
