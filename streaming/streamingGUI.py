@@ -257,7 +257,6 @@ class SPspectrum:
 class streamingGUI(tk.Frame):
     def __init__(self,master):
         super().__init__(master)
-        self.root = self.winfo_toplevel()
 
         #Initialise streaming potential
         self.streamingPotential = streamingPotential(self)
@@ -269,7 +268,6 @@ class streamingGUI(tk.Frame):
         self.saveIcon_image = tk.PhotoImage(file=r"icons\save_20dp_000000_FILL0_wght400_GRAD0_opsz20.png")
         self.saveIcon_image=self.saveIcon_image.subsample(ICON_SUBSAMPLE)
 
-
         #Configure grid
         # self.columnconfigure(0, weight=1)
         # self.rowconfigure(0, weight=3)
@@ -280,8 +278,12 @@ class streamingGUI(tk.Frame):
         self.leftFrame.grid(row=0,column=0,padx=(0,MAIN_FRAME_PADDING),pady=0,sticky='nswe')
         self.rightFrame.grid(row=0,column=2,padx=MAIN_FRAME_PADDING,pady=0,sticky='nswe')
 
-        self.menuBar = menuBar(self.root,self)
-        self.root.config(menu=self.menuBar)
+
+    def open_file(self):
+        """Opens file dialog to select folder with data."""
+        self.streamingPotential.folder_path = tk.filedialog.askdirectory()
+        self.master.dataFrame.folder_label.config(text = self.streamingPotential.folder_path)
+
 
 
 
@@ -388,7 +390,7 @@ class dataFrame(tk.Frame):
 
         tk.Label(self, text='Data',font=('Helvetica', TITLE_FONT_SIZE,'bold'),bg=self.parent['bg']).grid(row=0,column=0,columnspan=4,padx=10,pady=10, sticky = 'nswe')
 
-        tk.Label(self,text="Folder: ",bg=self.parent['bg']).grid(row=1,column=0,columnspan=2,padx=5,pady=5,sticky='nse')
+        tk.Button(self,text="Folder",command = self.master.open_file,width=8).grid(row=1,column=0,columnspan=2,padx=5,pady=5,sticky='nse')
         self.folder_label = tk.Label(self,text="",width=25,anchor="e", justify=tk.RIGHT,bg=self.parent['bg'])
         self.folder_label.grid(row=1,column=2,columnspan=4,padx=5,pady=5,sticky='nsw')
         if self.master.streamingPotential.folder_path:
@@ -752,23 +754,6 @@ class resultPanelFrame(tk.Frame):
         label.grid(row=0,column=2,padx=5,pady=5, sticky = 'nswe')
         label=tk.Button(self.bottomFrame, image=master.saveIcon_image)
         label.grid(row=0,column=3,padx=5,pady=5, sticky = 'nswe')
-
-
-class menuBar(tk.Menu):
-    def __init__(self,root,master):
-        super().__init__(root)
-        self.root = root
-        self.master = master
-        self.streamingPotential = self.master.streamingPotential
-        
-        fileMenu=tk.Menu(self)
-        fileMenu.add_command(label='Open',font=('', FONT_SIZE), command=self.open_file)
-        self.add_cascade(label='File', menu=fileMenu)
-
-    def open_file(self):
-        """Command for dropdown menu, which provides path of data to display."""
-        self.streamingPotential.folder_path = tk.filedialog.askdirectory()
-        self.master.dataFrame.folder_label.config(text = self.streamingPotential.folder_path)
 
 
 if __name__ =="__main__":
