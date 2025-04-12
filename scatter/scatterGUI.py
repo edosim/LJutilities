@@ -25,9 +25,15 @@ windll.shcore.SetProcessDpiAwareness(1)
 ### Format constants ###
 FONT_SIZE = 9
 TITLE_FONT_SIZE = 20
-SETTING_FRAMES_PADDING = 7.5
+
+MAIN_FRAME_PADDING = 10
+RIGHT_FRAME_PADDING_Y = 15
+RIGHT_FRAME_PADDING_X = 20
+SETTING_FRAMES_PADDING_Y = 5
+SETTING_FRAMES_PADDING_X = 0
 
 WINDOW_COLOR = "#F0F0F0"
+ACCENT_COLOR = '#D9D9D9'
 MAIN_BUTTON_FONT = ('Helvetica', 9, 'bold')
 MAIN_BUTTON_COLOR = "#dddddd"#"#ced1d7"
 INFO_ICON_SUBSAMPLE = 2
@@ -48,7 +54,7 @@ rcParams = {'figure.dpi':200,
 ###
 #This will color the border blue
 #Use to check frame shape
-#highlightbackground="blue", highlightthickness=1
+#highlightbackground="blue", highlightthickness=0
 
 ### --------Custom widgets---------
 class CustomHovertip(Hovertip):
@@ -299,15 +305,15 @@ class scatterGUI(tk.Frame):
         self.rowconfigure(1, weight=6)
 
         #Create and place frames
-        self.titleFrame = titleFrame(self)
+        # self.titleFrame = titleFrame(self)
         self.fileInfoFrame = fileInfoFrame(self)
         self.plotFrame = plotFrame(self)
-        self.settingsFrame = settingsFrame(self)
+        self.rightFrame = rightFrame(self)
 
-        self.titleFrame.grid(row=0,column=0,columnspan=3,padx=10,pady=10,sticky='nswe')
-        self.fileInfoFrame.grid(row=1,column=0,padx=10,pady=10,sticky='nswe')
-        self.plotFrame.grid(row=1,column=1,padx=10,pady=10,sticky='nswe')
-        self.settingsFrame.grid(row=1,column=2,padx=10,pady=1,sticky='nswe')
+        # self.titleFrame.grid(row=0,column=0,columnspan=3,padx=10,pady=10,sticky='nswe')
+        self.fileInfoFrame.grid(row=0,column=1,padx=MAIN_FRAME_PADDING,pady=10,sticky='nswe')
+        self.plotFrame.grid(row=1,column=1,padx=MAIN_FRAME_PADDING,pady=10,sticky='nswe')
+        self.rightFrame.grid(row=0,column=2,rowspan=2,padx=(MAIN_FRAME_PADDING,0),pady=0,sticky='nswe')
 
         #Add reference to self.settingsFrame to UVspectrum
         self.UVspectrum.settingsFrame = self.settingsFrame
@@ -323,15 +329,25 @@ class scatterGUI(tk.Frame):
         self.fileInfoFrame.fileNameLabel.config(text=fileName)
         self.UVspectrum.drawGraph()
 
-class settingsFrame(tk.Frame):
+class rightFrame(tk.Frame):
+    """This only contains settings frame but helps with padding"""
     def __init__(self,master):
-        super().__init__(master)
+        super().__init__(master,highlightbackground="red", highlightthickness=0,bg=ACCENT_COLOR)
         self.master = master
-        
-        #Configure grid
-        #
-        #
 
+        self.settingsFrame = settingsFrame(self,master)
+        self.settingsFrame.grid(row=0,column=0,padx=RIGHT_FRAME_PADDING_X,pady=RIGHT_FRAME_PADDING_Y)
+
+        # Make attributes of master for easier access
+        self.master.settingsFrame = self.settingsFrame
+
+
+class settingsFrame(tk.Frame):
+    def __init__(self,parent,master):
+        super().__init__(parent,bg=ACCENT_COLOR,highlightbackground="red", highlightthickness=0)
+        self.master = master
+        self.parent = parent
+        
         #Create (sub)frames
         self.retrievalSettingsFrame = retrievalSettingsFrame(self,master)
         self.fitGuessesFrame = fitGuessesFrame(self,master)
@@ -339,12 +355,13 @@ class settingsFrame(tk.Frame):
         self.fitResultsFrame = fitResultsFrame(self,master)
         self.retrieveFrame = retrieveFrame(self,master)
 
+
         # Place frames
-        self.retrievalSettingsFrame.grid(row=0,column=0,pady=SETTING_FRAMES_PADDING)
-        self.fitGuessesFrame.grid(row=1,column=0,pady=SETTING_FRAMES_PADDING)
-        self.photonOptionsFrame.grid(row=2,column=0,pady=SETTING_FRAMES_PADDING)
-        self.fitResultsFrame.grid(row=3,column=0,pady=SETTING_FRAMES_PADDING)
-        self.retrieveFrame.grid(row=4,column=0,pady=SETTING_FRAMES_PADDING)
+        self.retrievalSettingsFrame.grid(row=0,column=0,padx=SETTING_FRAMES_PADDING_X,pady=SETTING_FRAMES_PADDING_Y)
+        self.fitGuessesFrame.grid(row=1,column=0,padx=SETTING_FRAMES_PADDING_X,pady=SETTING_FRAMES_PADDING_Y)
+        self.photonOptionsFrame.grid(row=2,column=0,padx=SETTING_FRAMES_PADDING_X,pady=SETTING_FRAMES_PADDING_Y)
+        self.fitResultsFrame.grid(row=3,column=0,padx=SETTING_FRAMES_PADDING_X,pady=SETTING_FRAMES_PADDING_Y)
+        self.retrieveFrame.grid(row=4,column=0,padx=SETTING_FRAMES_PADDING_X,pady=SETTING_FRAMES_PADDING_Y)
 
         #Add reference to (sub)frames to UVspectrum
         self.master.UVspectrum.retrievalSettingsFrame =  self.retrievalSettingsFrame 
@@ -355,7 +372,7 @@ class settingsFrame(tk.Frame):
 
 class retrieveFrame(tk.Frame):
     def __init__(self,parent,master):
-        super().__init__(parent)
+        super().__init__(parent,bg=ACCENT_COLOR,highlightbackground="red", highlightthickness=0)
         self.master = master 
         self.parent = parent
         self.UVspectrum = master.UVspectrum
@@ -380,25 +397,25 @@ class retrieveFrame(tk.Frame):
 
 class fitResultsFrame(tk.Frame):
     def __init__(self,parent,master):
-        super().__init__(parent)
+        super().__init__(parent,bg=ACCENT_COLOR,highlightbackground="red", highlightthickness=0)
         self.master = master 
         self.parent = parent
         self.UVspectrum = master.UVspectrum 
 
         #Fit results title
-        self.fitResultsTitle_label=tk.Label(self, text='Fit results',font=('Helvetica', TITLE_FONT_SIZE,'bold'))
+        self.fitResultsTitle_label=tk.Label(self, text='Fit results',font=('Helvetica', TITLE_FONT_SIZE,'bold'),bg=self['bg'])
         self.fitResultsTitle_label.grid(row=0,column=0,columnspan=5,padx=10,pady=10, sticky = 'nswe')
 
         #Fit results display
-        gaussTypeTitle_label = tk.Label(self,text = 'Type')
+        gaussTypeTitle_label = tk.Label(self,text = 'Type',bg=self['bg'])
         gaussTypeTitle_label.grid(row=1,column=0,padx=5,pady=2)
-        amplitudesTitle_label = tk.Label(self,text = 'Amplitude')
+        amplitudesTitle_label = tk.Label(self,text = 'Amplitude',bg=self['bg'])
         amplitudesTitle_label.grid(row=1,column=1,padx=5,pady=2)
-        centresTitle_label = tk.Label(self,text = 'Centre / eV')
+        centresTitle_label = tk.Label(self,text = 'Centre / eV',bg=self['bg'])
         centresTitle_label.grid(row=1,column=2,padx=5,pady=0)
-        FWHMsTitle_label = tk.Label(self,text = 'FWHM / eV')
+        FWHMsTitle_label = tk.Label(self,text = 'FWHM / eV',bg=self['bg'])
         FWHMsTitle_label.grid(row=1,column=3,padx=5,pady=0)
-        eBEsTitle_label = tk.Label(self,text = 'eBE / eV')
+        eBEsTitle_label = tk.Label(self,text = 'eBE / eV',bg=self['bg'])
         eBEsTitle_label.grid(row=1,column=4,padx=5,pady=0)
 
         self.UVspectrum.gaussTypeStrings = []
@@ -414,53 +431,53 @@ class fitResultsFrame(tk.Frame):
         for ind in range(3):
             gaussType = tk.StringVar()
             self.UVspectrum.gaussTypeStrings.append(gaussType)
-            gaussType_label=tk.Label(self, textvariable=gaussType,width=4,justify=tk.RIGHT)
+            gaussType_label=tk.Label(self, textvariable=gaussType,width=4,justify=tk.RIGHT,bg=self['bg'])
             gaussType_label.grid(row=2+ind, column=0,pady=5,padx=5)
             gaussTypeLabels.append(gaussType_label)
 
             amp = tk.StringVar()
             self.UVspectrum.ampStrings.append(amp)
-            amp_label=tk.Label(self, textvariable=amp,width=10,justify=tk.RIGHT)
+            amp_label=tk.Label(self, textvariable=amp,width=10,justify=tk.RIGHT,bg=self['bg'])
             amp_label.grid(row=2+ind, column=1,pady=5,padx=5)
             ampLabels.append(amp_label)
 
             centre = tk.StringVar()
             self.UVspectrum.centreStrings.append(centre)
-            centre_label=tk.Label(self, textvariable=centre,width=10,justify=tk.RIGHT)
+            centre_label=tk.Label(self, textvariable=centre,width=10,justify=tk.RIGHT,bg=self['bg'])
             centre_label.grid(row=2+ind, column=2,pady=5,padx=5)
             centreLabels.append(centre_label)
 
             FWHM = tk.StringVar()
             self.UVspectrum.FWHMStrings.append(FWHM)
-            FWHM_label=tk.Label(self, textvariable=FWHM,width=10,justify=tk.RIGHT)
+            FWHM_label=tk.Label(self, textvariable=FWHM,width=10,justify=tk.RIGHT,bg=self['bg'])
             FWHM_label.grid(row=2+ind, column=3,pady=5,padx=5)
             FWHMLabels.append(FWHM_label)
             
             eBE = tk.StringVar()
             self.UVspectrum.eBEStrings.append(eBE)
-            eBE_label=tk.Label(self, textvariable=eBE,width=10,justify=tk.RIGHT)
+            eBE_label=tk.Label(self, textvariable=eBE,width=10,justify=tk.RIGHT,bg=self['bg'])
             eBE_label.grid(row=2+ind, column=4,pady=5,padx=5)
             eBELabels.append(eBE_label)
 
 class photonOptionsFrame(tk.Frame):
     def __init__(self,parent,master):
-        super().__init__(parent)
+        super().__init__(parent,bg=ACCENT_COLOR,highlightbackground="red", highlightthickness=0)
         self.master = master 
         self.parent = parent 
         self.UVspectrum = master.UVspectrum 
 
         #Photon options title
-        self.photonOptionsTitle_label=tk.Label(self, text='Photon options',font=('Helvetica', TITLE_FONT_SIZE,'bold'))
+        self.photonOptionsTitle_label=tk.Label(self, text='Photon options',font=('Helvetica', TITLE_FONT_SIZE,'bold'),bg=self['bg'])
         self.photonOptionsTitle_label.grid(row=0,column=0,columnspan=3,padx=10,pady=10, sticky = 'nswe')
 
         #Wavelength selection
-        self.wavelengthTitle_label = tk.Label(self,text = 'Wavelength / nm')
+        self.wavelengthTitle_label = tk.Label(self,text = 'Wavelength / nm',bg=self['bg'])
         self.wavelengthTitle_label.grid(row=1,column=0,padx=5,pady=5)
         self.wavelength_entry = tk.Entry(self,width=10,textvariable = self.UVspectrum.wavelength)
         self.wavelength_entry.grid(row=1,column=1,pady=5,padx=5,sticky='nsw')
 
         #Number of photon selection
-        self.numberOfPhotonsTitle_label = tk.Label(self,text = 'n')
+        self.numberOfPhotonsTitle_label = tk.Label(self,text = 'n',bg=self['bg'])
         self.numberOfPhotonsTitle_label.grid(row=2,column=0,padx=5,pady=5)
 
         def validate_integer(value_if_allowed, action):
@@ -484,24 +501,24 @@ class photonOptionsFrame(tk.Frame):
 
         #Photon energy display
     
-        self.photonEnergyTitle_label=tk.Label(self,text="Photon energy / eV")
+        self.photonEnergyTitle_label=tk.Label(self,text="Photon energy / eV",bg=self['bg'])
         self.photonEnergyTitle_label.grid(row=3,column=0,pady=5,padx=5)
-        self.photonEnergyString_label=tk.Label(self,width=10,text=self.UVspectrum.photonEnergyStr)
+        self.photonEnergyString_label=tk.Label(self,width=10,text=self.UVspectrum.photonEnergyStr,bg=self['bg'])
         self.photonEnergyString_label.grid(row=3,column=1,pady=5,padx=5,sticky='nsw')
 
 class fitGuessesFrame(tk.Frame):
     def __init__(self,parent,master):
-        super().__init__(parent)
+        super().__init__(parent,bg=ACCENT_COLOR,highlightbackground="red", highlightthickness=0)
         self.master = master 
         self.parent = parent
         self.UVspectrum = master.UVspectrum
 
         #Fit parameters title
-        fitParametersTitle_label=tk.Label(self, text='Fit parameters',font=('Helvetica', TITLE_FONT_SIZE,'bold'))
+        fitParametersTitle_label=tk.Label(self, text='Fit parameters',font=('Helvetica', TITLE_FONT_SIZE,'bold'),bg=self['bg'])
         fitParametersTitle_label.grid(row=0,column=0,columnspan=4,padx=10,pady=10, sticky = 'nswe')
 
         #Surface/bulk selection
-        gaussTypeTitle_label = tk.Label(self,text = 'Type')
+        gaussTypeTitle_label = tk.Label(self,text = 'Type',bg=self['bg'])
         gaussTypeTitle_label.grid(row=1,column=0,padx=10,pady=2)
         for i,gaussType in enumerate(self.UVspectrum.gaussTypes):
             surfValue_combobox = ttk.Combobox(self,textvariable=gaussType, values=self.UVspectrum.gaussTypeSelection,
@@ -510,7 +527,7 @@ class fitGuessesFrame(tk.Frame):
 
 
         #Amplitudes
-        amplitudesTitle_label = tk.Label(self,text = 'Amplitude')
+        amplitudesTitle_label = tk.Label(self,text = 'Amplitude',bg=self['bg'])
         amplitudesTitle_label.grid(row=1,column=1,padx=10,pady=2)
         amp1=tk.StringVar(value = 1)
         amp2=tk.StringVar()
@@ -524,7 +541,7 @@ class fitGuessesFrame(tk.Frame):
         amp3_entry.grid(row=4, column=1,pady=5,padx=5)
         
         #Centres
-        centresTitle_label = tk.Label(self,text = 'Centre / eV')
+        centresTitle_label = tk.Label(self,text = 'Centre / eV',bg=self['bg'])
         centresTitle_label.grid(row=1,column=2,padx=10,pady=0)
         centre1=tk.StringVar(value = 1)
         centre2=tk.StringVar()
@@ -537,7 +554,7 @@ class fitGuessesFrame(tk.Frame):
         centre2_entry.grid(row=3, column=2,pady=5,padx=5)
         centre3_entry.grid(row=4, column=2,pady=5,padx=5)
 
-        FWHMsTitle_label = tk.Label(self,text = 'FWHM / eV')
+        FWHMsTitle_label = tk.Label(self,text = 'FWHM / eV',bg=self['bg'])
         FWHMsTitle_label.grid(row=1,column=3,padx=10,pady=0)
         FWHM1=tk.StringVar(value = 1)
         FWHM2=tk.StringVar()
@@ -552,48 +569,48 @@ class fitGuessesFrame(tk.Frame):
 
 class retrievalSettingsFrame(tk.Frame):
     def __init__(self,parent,master):
-        super().__init__(parent)
+        super().__init__(parent,bg=ACCENT_COLOR,highlightbackground="red", highlightthickness=0)
         self.master = master 
         self.parent = parent   
 
         #Fit settings title
-        self.fitSettingsTitle_label=tk.Label(self, text='Retrieval settings',font=('Helvetica',TITLE_FONT_SIZE,'bold'))
+        self.fitSettingsTitle_label=tk.Label(self, text='Retrieval settings',font=('Helvetica',TITLE_FONT_SIZE,'bold'),bg=self['bg'])
         self.fitSettingsTitle_label.grid(row=0,column=0,columnspan=3,padx=10,pady=10,sticky='nswe')
 
         #Surface gaussian amplitude
-        self.surfValueTitle_label=tk.Label(self,text='Surface gaussian amplitude',anchor='e')
+        self.surfValueTitle_label=tk.Label(self,text='Surface gaussian amplitude',anchor='e',bg=self['bg'])
         self.surfValueTitle_label.grid(row=1,column=0,padx=10,pady=2,sticky = 'e')
         self.surfValue = tk.StringVar(value = BS.concAmps[0])
         self.surfValue_combobox = ttk.Combobox(self,textvariable=self.surfValue,values=BS.concAmps,state='readonly')
         self.surfValue_combobox.grid(row=1,column=1,pady=2)
-        self.infoIconSurfValue_label = tk.Label(self, image=master.infoIcon_image)
+        self.infoIconSurfValue_label = tk.Label(self, image=master.infoIcon_image,bg=self['bg'])
         self.infoIconSurfValue_label.grid(row=1,column=2,padx=10,sticky='w')
         self.infoIconsurfValue_hover = CustomHovertip(self.infoIconSurfValue_label,'Concentration profiles are described as "A * g(x) + 1",\nwhere g(x) is a Gaussian and A is the height of the Gaussian')
 
         #Escape threshold value
-        self.thresholdValueTitle_label=tk.Label(self,text='Escape threshold / eV',anchor='e')
+        self.thresholdValueTitle_label=tk.Label(self,text='Escape threshold / eV',anchor='e',bg=self['bg'])
         self.thresholdValueTitle_label.grid(row=2,column=0,padx=10,pady=2,sticky = 'e')
         self.thresholdValue=tk.StringVar(value = BS.E0s[0])
         self.thresholdValue_combobox = ttk.Combobox(self,textvariable=self.thresholdValue,values=BS.E0s,state='readonly')
         self.thresholdValue_combobox.grid(row=2, column=1,pady=2)
-        self.infoIconthresholdValue_label = tk.Label(self, image=master.infoIcon_image)
+        self.infoIconthresholdValue_label = tk.Label(self, image=master.infoIcon_image,bg=self['bg'])
         self.infoIconthresholdValue_label.grid(row=2,column=2,padx=10,sticky='w')
         self.infoIconthresholdValue_hover = CustomHovertip(self.infoIconthresholdValue_label,'Barrier electrons need to overcome to escape jet.\nAlso referred to as electron affinity of water at the surface')
 
         #Cross section set selection
-        self.crossSectionSetTitle_label=tk.Label(self,text='Cross section set',anchor='e')
+        self.crossSectionSetTitle_label=tk.Label(self,text='Cross section set',anchor='e',bg=self['bg'])
         self.crossSectionSetTitle_label.grid(row=3,column=0,padx=10,pady=2,sticky = 'e')
         self.crossSectionSet = tk.StringVar(value = BS.crossSectionSets[0])
         self.crossSectionSet_combobox = ttk.Combobox(self,textvariable=self.crossSectionSet,values=BS.crossSectionSets,state='readonly')
         self.crossSectionSet_combobox.grid(row=3,column=1,pady=2)
-        self.infoIconCrossSectionSet_label = tk.Label(self, image=master.infoIcon_image)
+        self.infoIconCrossSectionSet_label = tk.Label(self, image=master.infoIcon_image,bg=self['bg'])
         self.infoIconCrossSectionSet_label.grid(row=3,column=2,padx=10,sticky='w')
         self.infoIconCrossSectionSet_hover = CustomHovertip(self.infoIconCrossSectionSet_label,'Will come up with better naming system')
 
 
 class plotFrame(tk.Frame):
     def __init__(self,master):
-        super().__init__(master)
+        super().__init__(master,highlightbackground="red", highlightthickness=0)
         self.master = master
         # Update rcParams
         mpl.rcParams.update(rcParams)
@@ -602,7 +619,7 @@ class plotFrame(tk.Frame):
         self.canvas=FigureCanvasTkAgg(self.fig, master=self)  
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=0, column=0)
-        self.fig.subplots_adjust(left=0.15, right=0.965, top=0.97, bottom=0.16, wspace=0, hspace=0)
+        self.fig.subplots_adjust(left=0.17, right=0.965, top=0.97, bottom=0.16, wspace=0, hspace=0)
         self.fig.patch.set_color(WINDOW_COLOR)
 
         self.ax = self.fig.add_subplot(111)
@@ -625,18 +642,22 @@ class plotFrame(tk.Frame):
 
 class titleFrame(tk.Frame):
     def __init__(self,master):
-        super().__init__(master)
+        super().__init__(master,highlightbackground="red", highlightthickness=0)
         label = tk.Label(self, font=('Helvetica', TITLE_FONT_SIZE),height = 2,text="Retrieval of ultraviolet photoelectron spectra")
         label.pack(pady=10)
 
 class fileInfoFrame(tk.Frame):
     def __init__(self,master):
-        super().__init__(master)
+        super().__init__(master,bg=ACCENT_COLOR,highlightbackground="red", highlightthickness=0)
+    
+        self.columnconfigure(0, weight=2)
+        self.columnconfigure(1, weight=3)
+        self.columnconfigure(2, weight=3)
 
-        fileNameButton = tk.Button(self,text="File", command=master.open_file, width=10)
-        fileNameButton.grid(row=0,column=0,padx=20,pady=10,sticky='w')
-        self.fileNameLabel = tk.Label(self,text="", width=20)
-        self.fileNameLabel.grid(row=2,column=0,padx=10,pady=10)
+        fileNameButton = tk.Button(self,text="Load file", command=master.open_file, width=10)
+        fileNameButton.grid(row=0,column=0,padx=20,pady=10,sticky='e')
+        self.fileNameLabel = tk.Label(self,text="", width=20,bg=self['bg'])
+        self.fileNameLabel.grid(row=0,column=1,padx=10,pady=10,sticky='w')
 
 
 if __name__ =="__main__":
