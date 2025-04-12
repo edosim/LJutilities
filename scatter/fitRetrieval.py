@@ -3,7 +3,7 @@ from scipy.interpolate import interp1d
 from scipy.optimize import curve_fit
 
 #####
-import loadBasisSets as BS
+from . import loadBasisSets as BS
 # import fittingFunctions as FF
 
 
