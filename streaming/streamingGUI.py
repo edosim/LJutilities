@@ -13,9 +13,9 @@ from ctypes import windll
 import time
 ####
 # from StreamingPotential folder
-from SPfunctions import * 
+from .SPfunctions import * 
 #Default values
-from load_settings import *
+from .load_settings import *
 
 
 #fix blurry text

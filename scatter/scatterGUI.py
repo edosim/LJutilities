@@ -7,8 +7,8 @@ import numpy as np
 from idlelib.tooltip import Hovertip
 from ctypes import windll
 ####
-import loadBasisSets as BS
-import fitRetrieval as FR
+from . import loadBasisSets as BS
+from . import fitRetrieval as FR
 ###
 
 #fix blurry text
