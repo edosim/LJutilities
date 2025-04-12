@@ -2,25 +2,48 @@ import tkinter as tk
 from tkinter import ttk
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.backend_bases import key_press_handler
+from matplotlib.ticker import MultipleLocator, AutoMinorLocator
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from idlelib.tooltip import Hovertip
 from ctypes import windll
 ####
-from . import loadBasisSets as BS
-from . import fitRetrieval as FR
+if __name__=="__main__":
+    # Direct import
+    import loadBasisSets as BS
+    import fitRetrieval as FR
+else:
+    #Relative import
+    from . import loadBasisSets as BS
+    from . import fitRetrieval as FR
 ###
 
 #fix blurry text
 windll.shcore.SetProcessDpiAwareness(1)
 
-### Global variables ###
+### Format constants ###
 FONT_SIZE = 9
-TITLE_FONT_SIZE = 13
+TITLE_FONT_SIZE = 20
 SETTING_FRAMES_PADDING = 7.5
-BUTTON_FONT = ('Helvetica', 9, 'bold')
-BUTTON_COLOR = "#dddddd"#"#ced1d7"
+
+WINDOW_COLOR = "#F0F0F0"
+MAIN_BUTTON_FONT = ('Helvetica', 9, 'bold')
+MAIN_BUTTON_COLOR = "#dddddd"#"#ced1d7"
 INFO_ICON_SUBSAMPLE = 2
+
+
+## mpl rcParams
+rcParams = {'figure.dpi':200,
+            'font.family':'Arial',
+            'font.size': 10.0,
+            'legend.fontsize': 'medium', #equal to font.size
+            'axes.labelsize':'medium',
+            'legend.handletextpad': 0.8,
+            'legend.labelspacing': 0.5,
+            'lines.linewidth': 1.5,
+            'lines.markersize': 3
+            }
 
 ###
 #This will color the border blue
@@ -168,6 +191,7 @@ class photoelectronSpectrum:
     def drawFit(self, rawFit = False):
         """Plots image on the canvas """
         fig, ax = self.master.plotFrame.fig, self.master.plotFrame.ax
+
         canvas,fitLine, retrievedLine = self.master.plotFrame.canvas,self.master.plotFrame.fitLine,self.master.plotFrame.retrievedLine
         
         #Remove existing lines
@@ -216,14 +240,18 @@ class photoelectronSpectrum:
 
     def drawGraph(self):
         if self.filePath:
-            self.master.plotFrame.fig.clear()
             self.spectrum = np.genfromtxt(self.filePath,delimiter = '\t').T
             self.itpData = FR.interpolateData(self.spectrum, min_eKE = min(self.spectrum[0]), xs = self.xs)
 
-            self.master.plotFrame.ax = self.master.plotFrame.fig.add_subplot(111) #returns axes
-            self.master.plotFrame.ax.plot(self.itpData[0],self.itpData[1],lw=1,c='tab:blue')
+            #Get axis
+            ax = self.master.plotFrame.ax
+            #Clear all lines
+            for line in ax.lines:
+                line.remove()
 
-            self.master.plotFrame.ax.set_xlim(-.75,5)
+            ax.plot(self.itpData[0],self.itpData[1],lw=1,c='tab:blue')
+
+            self.master.plotFrame.ax.set_xlim(-.5,5)
             self.master.plotFrame.canvas.draw()
 
     def updatePhotonEnergy(self,*args):
@@ -248,15 +276,13 @@ class photoelectronSpectrum:
                 self.eBEStrings[ind].set("")
 
 
-class scatterGUI(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.wm_title("Scatter")
-        self.geometry("+60+60")
+class scatterGUI(tk.Frame):
+    def __init__(self,master):
+        super().__init__(master)
+        self.root = self.winfo_toplevel()
 
         #Initialise UVspectrum
         self.UVspectrum = photoelectronSpectrum(self)
-
 
         #'i' image
         self.infoIcon_image = tk.PhotoImage(file=r"Icons\info_20dp_5F6368_FILL0_wght400_GRAD0_opsz20.png")
@@ -276,17 +302,26 @@ class scatterGUI(tk.Tk):
         self.titleFrame = titleFrame(self)
         self.fileInfoFrame = fileInfoFrame(self)
         self.plotFrame = plotFrame(self)
-        self.menuBar = menuBar(self)
         self.settingsFrame = settingsFrame(self)
 
         self.titleFrame.grid(row=0,column=0,columnspan=3,padx=10,pady=10,sticky='nswe')
         self.fileInfoFrame.grid(row=1,column=0,padx=10,pady=10,sticky='nswe')
         self.plotFrame.grid(row=1,column=1,padx=10,pady=10,sticky='nswe')
         self.settingsFrame.grid(row=1,column=2,padx=10,pady=1,sticky='nswe')
-        self.config(menu=self.menuBar)
 
         #Add reference to self.settingsFrame to UVspectrum
         self.UVspectrum.settingsFrame = self.settingsFrame
+
+    def open_file(self):
+        """Command for dropdown menu, which provides path of data to display."""
+        ftypes = [('text files','*.txt'),('comma delimited files','*.csv'),('all files','*.*')]
+        dlg = tk.filedialog.Open(self,filetypes=ftypes)
+        filePath = dlg.show()
+        self.UVspectrum.filePath = filePath
+        fileName = filePath.split("/")[-1]
+        self.UVspectrum.fileName = fileName
+        self.fileInfoFrame.fileNameLabel.config(text=fileName)
+        self.UVspectrum.drawGraph()
 
 class settingsFrame(tk.Frame):
     def __init__(self,master):
@@ -327,19 +362,19 @@ class retrieveFrame(tk.Frame):
 
         #Retrieve button
         retrieve_button=tk.Button(self, text="Retrieve",height=2,width=20,
-                                  font=BUTTON_FONT, bg = BUTTON_COLOR,
+                                  font=MAIN_BUTTON_FONT, bg = MAIN_BUTTON_COLOR,
                                    command=self.UVspectrum.retrieve)
         retrieve_button.grid(row=0,column=0,sticky='nesw',padx=10,pady=10)
 
         #Plot guess button
         retrieve_button=tk.Button(self, text="Plot guess",height=2,width=20,
-                                  font=BUTTON_FONT,bg = BUTTON_COLOR,
+                                  font=MAIN_BUTTON_FONT,bg = MAIN_BUTTON_COLOR,
                                   command=self.UVspectrum.drawGuess)
         retrieve_button.grid(row=0,column=1,sticky='nesw',padx=10,pady=10)
 
         #Fit raw button
         retrieve_button=tk.Button(self, text="Raw fit",height=2,width=20,
-                                  font=BUTTON_FONT,bg = BUTTON_COLOR,
+                                  font=MAIN_BUTTON_FONT,bg = MAIN_BUTTON_COLOR,
                                   command=self.UVspectrum.fitRaw)
         retrieve_button.grid(row=1,column=0,sticky='nesw',padx=10,pady=10)
 
@@ -555,37 +590,29 @@ class retrievalSettingsFrame(tk.Frame):
         self.infoIconCrossSectionSet_label.grid(row=3,column=2,padx=10,sticky='w')
         self.infoIconCrossSectionSet_hover = CustomHovertip(self.infoIconCrossSectionSet_label,'Will come up with better naming system')
 
-class menuBar(tk.Menu):
-    def __init__(self,master):
-        super().__init__(master)
-        self.master = master
-        self.UVspectrum = self.master.UVspectrum
-        
-        fileMenu=tk.Menu(self)
-        fileMenu.add_command(label='Open',font=('', FONT_SIZE), command=self.open_file)
-        self.add_cascade(label='File', menu=fileMenu)
-
-    def open_file(self):
-        """Command for dropdown menu, which provides path of data to display."""
-        ftypes = [('text files','*.txt'),('comma delimited files','*.csv'),('all files','*.*')]
-        dlg = tk.filedialog.Open(self.master,filetypes=ftypes)
-        filePath = dlg.show()
-        self.UVspectrum.filePath = filePath
-        fileName = filePath.split("/")[-1]
-        self.UVspectrum.fileName = fileName
-        self.master.fileInfoFrame.fileNameLabel.config(text=fileName)
-        self.UVspectrum.drawGraph()
 
 class plotFrame(tk.Frame):
     def __init__(self,master):
         super().__init__(master)
         self.master = master
+        # Update rcParams
+        mpl.rcParams.update(rcParams)
         ### Initialise fig
         self.fig = plt.figure(figsize=(4, 3.2), dpi=200)
         self.canvas=FigureCanvasTkAgg(self.fig, master=self)  
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=0, column=0)
-        self.ax = None
+        self.fig.subplots_adjust(left=0.15, right=0.965, top=0.97, bottom=0.16, wspace=0, hspace=0)
+        self.fig.patch.set_color(WINDOW_COLOR)
+
+        self.ax = self.fig.add_subplot(111)
+        self.ax.set_xlabel("Electron kinetic energy / eV")
+        self.ax.set_ylabel("Photoelectron signal / a.u.")
+        #Minor ticks
+        self.ax.xaxis.set_minor_locator(AutoMinorLocator('auto'))
+        self.ax.yaxis.set_minor_locator(AutoMinorLocator('auto'))
+
+        # self.ax = None
         self.fitLine = None
         self.retrievedLine = None
         self.guessFitLine = None
@@ -606,12 +633,25 @@ class fileInfoFrame(tk.Frame):
     def __init__(self,master):
         super().__init__(master)
 
-        fileNameTitleLabel = tk.Label(self,text="File Name", anchor='w')
-        fileNameTitleLabel.grid(row=0,column=0,padx=20,pady=10,sticky='w')
+        fileNameButton = tk.Button(self,text="File", command=master.open_file, width=10)
+        fileNameButton.grid(row=0,column=0,padx=20,pady=10,sticky='w')
         self.fileNameLabel = tk.Label(self,text="", width=20)
         self.fileNameLabel.grid(row=2,column=0,padx=10,pady=10)
 
 
 if __name__ =="__main__":
-    app = scatterGUI()
+
+    app = tk.Tk()
+    scatterFrame = scatterGUI(app)
+    scatterFrame.pack()
+
+    rcParams = ['figure.dpi','font.family','font.size','legend.fontsize','axes.labelsize',
+                'legend.handletextpad','legend.labelspacing','lines.linewidth','lines.markersize']
+    for rcParam in rcParams:
+        print(rcParam, mpl.rcParams[rcParam])
+    app.geometry("+60+60")
+    app.wm_title("Scatter")
     app.mainloop()
+
+
+

@@ -11,11 +11,15 @@ import yaml
 from ctypes import windll
 
 import time
-####
-# from StreamingPotential folder
-from .SPfunctions import * 
-#Default values
-from .load_settings import *
+
+if __name__=="__main__":
+    # Direct import
+    from SPfunctions import *
+    from load_settings import *
+else:
+    #Relative import
+    from .SPfunctions import * 
+    from .load_settings import *
 
 
 #fix blurry text
@@ -34,8 +38,8 @@ SETTINGS_FRAME_PADDING = 5
 
 WINDOW_COLOR = "#F0F0F0"
 ACCENT_COLOR = '#D9D9D9'
-BUTTON_FONT = ('Helvetica', 9, 'bold')
-BUTTON_COLOR = "#dddddd"#"#ced1d7"
+MAIN_BUTTON_FONT = ('Helvetica', 9, 'bold')
+MAIN_BUTTON_COLOR = "#dddddd"#"#ced1d7"
 ICON_SUBSAMPLE = 2
 
 #extra
@@ -62,16 +66,16 @@ zerosubstr = u'\u2080'
 BLACK = "#565656"
 
 #### MPL rcParams ######
-mpl.rcParams['figure.dpi'] = 200
-mpl.rcParams['font.family'] = 'Arial'
-mpl.rcParams['font.size'] = 5
-mpl.rcParams['legend.fontsize'] = 6
-mpl.rcParams['axes.labelsize'] = 'medium' #equal to font.size
-mpl.rcParams['legend.handletextpad'] = 0.3
-mpl.rcParams['legend.labelspacing'] = 0.3
-mpl.rcParams['lines.linewidth'] = 1
-mpl.rcParams['lines.markersize'] = 3
-
+rcParams = {'figure.dpi':200,
+            'font.family':'Arial',
+            'font.size':5.0,
+            'legend.fontsize': 6, 
+            'axes.labelsize':'medium', #equal to font.size
+            'legend.handletextpad': 0.3,
+            'legend.labelspacing': 0.3,
+            'lines.linewidth': 1,
+            'lines.markersize': 3
+            }
 
 ###
 #This will color the border red
@@ -250,11 +254,9 @@ class SPspectrum:
         print(self.fit_params)
 
 
-class streamingGUI(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.wm_title("Streaming potential")
-        self.geometry("+60+60")
+class streamingGUI(tk.Frame):
+    def __init__(self,master):
+        super().__init__(master)
 
         #Initialise streaming potential
         self.streamingPotential = streamingPotential(self)
@@ -266,7 +268,6 @@ class streamingGUI(tk.Tk):
         self.saveIcon_image = tk.PhotoImage(file=r"icons\save_20dp_000000_FILL0_wght400_GRAD0_opsz20.png")
         self.saveIcon_image=self.saveIcon_image.subsample(ICON_SUBSAMPLE)
 
-
         #Configure grid
         # self.columnconfigure(0, weight=1)
         # self.rowconfigure(0, weight=3)
@@ -277,8 +278,12 @@ class streamingGUI(tk.Tk):
         self.leftFrame.grid(row=0,column=0,padx=(0,MAIN_FRAME_PADDING),pady=0,sticky='nswe')
         self.rightFrame.grid(row=0,column=2,padx=MAIN_FRAME_PADDING,pady=0,sticky='nswe')
 
-        self.menuBar = menuBar(self)
-        self.config(menu=self.menuBar)
+
+    def open_file(self):
+        """Opens file dialog to select folder with data."""
+        self.streamingPotential.folder_path = tk.filedialog.askdirectory()
+        self.master.dataFrame.folder_label.config(text = self.streamingPotential.folder_path)
+
 
 
 
@@ -385,7 +390,7 @@ class dataFrame(tk.Frame):
 
         tk.Label(self, text='Data',font=('Helvetica', TITLE_FONT_SIZE,'bold'),bg=self.parent['bg']).grid(row=0,column=0,columnspan=4,padx=10,pady=10, sticky = 'nswe')
 
-        tk.Label(self,text="Folder: ",bg=self.parent['bg']).grid(row=1,column=0,columnspan=2,padx=5,pady=5,sticky='nse')
+        tk.Button(self,text="Folder",command = self.master.open_file,width=8).grid(row=1,column=0,columnspan=2,padx=5,pady=5,sticky='nse')
         self.folder_label = tk.Label(self,text="",width=25,anchor="e", justify=tk.RIGHT,bg=self.parent['bg'])
         self.folder_label.grid(row=1,column=2,columnspan=4,padx=5,pady=5,sticky='nsw')
         if self.master.streamingPotential.folder_path:
@@ -423,6 +428,9 @@ class summaryFrame(tk.Frame):
         self.streamingPotential = master.streamingPotential
         self.rowconfigure(0, weight=1)
 
+        # Update rcParams
+        mpl.rcParams.update(rcParams)
+        # Initialise figure
         self.fig = mplfigure.Figure(figsize=(FIG_WID,1),dpi=200)
         self.fig.patch.set_color(WINDOW_COLOR)
         self.canvas=FigureCanvasTkAgg(self.fig, master=self)  
@@ -507,7 +515,9 @@ class fittingFrame(tk.Frame):
         self.master = master 
         self.parent = parent
         self.streamingPotential = master.streamingPotential
-        #Figure
+        # Update rcParams
+        mpl.rcParams.update(rcParams)
+        # Initialise figure
         self.fig = mplfigure.Figure(figsize=(FIG_WID, FIG_WID*0.75), dpi=200)
         self.fig.patch.set_color(WINDOW_COLOR)
         self.canvas=FigureCanvasTkAgg(self.fig, master=self)  
@@ -637,7 +647,9 @@ class resultsFrame(tk.Frame):
         self.master = master 
         self.parent = parent
         self.streamingPotential = master.streamingPotential
-
+        # Update rcParams
+        mpl.rcParams.update(rcParams)
+        #Initialise figure
         self.fig = mplfigure.Figure(figsize=(FIG_WID, FIG_WID*0.75), dpi=200)
         self.fig.patch.set_color(WINDOW_COLOR)
         self.canvas=FigureCanvasTkAgg(self.fig, master=self)  
@@ -751,22 +763,12 @@ class resultPanelFrame(tk.Frame):
         label.grid(row=0,column=3,padx=5,pady=5, sticky = 'nswe')
 
 
-class menuBar(tk.Menu):
-    def __init__(self,master):
-        super().__init__(master)
-        self.master = master
-        self.streamingPotential = self.master.streamingPotential
-        
-        fileMenu=tk.Menu(self)
-        fileMenu.add_command(label='Open',font=('', FONT_SIZE), command=self.open_file)
-        self.add_cascade(label='File', menu=fileMenu)
-
-    def open_file(self):
-        """Command for dropdown menu, which provides path of data to display."""
-        self.streamingPotential.folder_path = tk.filedialog.askdirectory()
-        self.master.dataFrame.folder_label.config(text = self.streamingPotential.folder_path)
-
-
 if __name__ =="__main__":
-    app = streamingGUI()
+
+    app = tk.Tk()
+    streamingFrame = streamingGUI(app)
+    streamingFrame.pack()
+
+    app.geometry("+60+60")
+    app.wm_title("Streaming")
     app.mainloop()
