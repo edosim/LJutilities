@@ -38,8 +38,8 @@ SETTINGS_FRAME_PADDING = 5
 
 WINDOW_COLOR = "#F0F0F0"
 ACCENT_COLOR = '#D9D9D9'
-BUTTON_FONT = ('Helvetica', 9, 'bold')
-BUTTON_COLOR = "#dddddd"#"#ced1d7"
+MAIN_BUTTON_FONT = ('Helvetica', 9, 'bold')
+MAIN_BUTTON_COLOR = "#dddddd"#"#ced1d7"
 ICON_SUBSAMPLE = 2
 
 #extra
