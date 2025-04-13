@@ -164,9 +164,9 @@ class streamingPotential:
         data[1]/=max(data[1][np.logical_and(data[0]>2.5,data[0]<5)])
         #Store spectrum
         self.spectra[ind] = SPspectrum(data,pos,self.folder_path,date,findex)
-        #Plot spectrum
+        #Plot spectrum in summary
         self.master.summaryFrame.plot_summary_spectrum(ind)
-        #If active in summary plot, redraw
+        #If active in fitting frame, redraw
         if ind == self.master.rightFrame.fittingFrame.display_ind:
             self.master.rightFrame.fittingFrame.plot_fit_spectrum(ind)
         #Replot results plot if changed
@@ -175,9 +175,27 @@ class streamingPotential:
         #Update tick in GUI
         self.loaded_confirm_labels[ind].config(text=tickstr)
 
-    # Save result
+    def delete_all_spectra(self):
+        for ind in range(len(self.file_indices)):
+            self.delete_spectrum(ind)
+
+    def delete_spectrum(self,ind):
+        """Removes spectrum"""
+        # Remove spectrum from list of spectra
+        self.spectra[ind] = None
+        #Remove plot of spectrum in summary
+        self.master.summaryFrame.plot_summary_spectrum(ind)
+        #If active in fitting frame, remove
+        if ind == self.master.rightFrame.fittingFrame.display_ind:
+            self.master.rightFrame.fittingFrame.plot_fit_spectrum(ind)
+        #Replot results plot if changed
+        if ind in self.master.rightFrame.resultsFrame.plotted_indices:
+            self.master.rightFrame.resultsFrame.plot_positions()
+        #Update tick in GUI
+        self.loaded_confirm_labels[ind].config(text='X')
+
+
     def save_result(self):
-        ## find better way!! maybe yaml??
         """Saves a tab-delimited txt file with results and enough
         informatin to reproduce the results
         - SP
@@ -267,6 +285,8 @@ class streamingGUI(tk.Frame):
         # Symbols/icons
         self.saveIcon_image = tk.PhotoImage(file=r"icons\save_20dp_000000_FILL0_wght400_GRAD0_opsz20.png")
         self.saveIcon_image=self.saveIcon_image.subsample(ICON_SUBSAMPLE)
+        self.deleteIcon_image = tk.PhotoImage(file=r"icons\delete_30dp_000000_FILL0_wght400_GRAD0_opsz24.png")
+        self.deleteIcon_image=self.deleteIcon_image.subsample(1)
 
         #Configure grid
         # self.columnconfigure(0, weight=1)
@@ -282,7 +302,7 @@ class streamingGUI(tk.Frame):
     def open_file(self):
         """Opens file dialog to select folder with data."""
         self.streamingPotential.folder_path = tk.filedialog.askdirectory()
-        self.master.dataFrame.folder_label.config(text = self.streamingPotential.folder_path)
+        self.dataFrame.folder_label.config(text = self.streamingPotential.folder_path)
 
 
 
@@ -414,10 +434,16 @@ class dataFrame(tk.Frame):
         tk.Button(self,text='Load all',command=self.master.streamingPotential.load_all_files,width=10).grid(row=3,column=3,pady=5,padx=5,sticky='nswe')
         for ind in range(MAX_NUM_DATA):
             tk.Button(self,text='Load',command=lambda ind=ind:self.master.streamingPotential.load_file(ind),width=10).grid(row=4+ind,column=3,pady=5,padx=5,sticky='nswe')
+        #Delete buttons
+        b = tk.Button(self,image=master.deleteIcon_image,command=self.master.streamingPotential.delete_all_spectra,width=10)
+        b.grid(row=3,column=4,pady=5,padx=5,sticky='nswe')
+        for ind in range(MAX_NUM_DATA):
+            b = tk.Button(self,image=master.deleteIcon_image,command=lambda ind=ind:self.master.streamingPotential.delete_spectrum(ind))
+            b.grid(row=4+ind,column=4,pady=5,padx=5,sticky='nswe')
         #Loaded?
         for ind in range(MAX_NUM_DATA):
-            label = tk.Label(self,text='X',bg=self['bg'])
-            label.grid(row=4+ind,column=4,pady=5,padx=5,sticky='nswe')
+            label = tk.Label(self,text='X',bg=self['bg'],wid=1)
+            label.grid(row=4+ind,column=5,pady=5,padx=5,sticky='nswe')
             self.master.streamingPotential.loaded_confirm_labels.append(label)
 
 class summaryFrame(tk.Frame):
@@ -468,16 +494,29 @@ class summaryFrame(tk.Frame):
         self.canvas.mpl_connect('motion_notify_event', self.on_motion)
 
     def plot_summary_spectrum(self,ind):
+        """Plots data in `spectra[ind]` in corresponding plot in summary frame.
+        If not data is present it plots nothing"""
+        # Get data
         spectrum = self.streamingPotential.spectra[ind]
         #Get axis
         ax = self.axes.flatten()[ind]
-        #Update plot
-        ax.get_lines()[0].set_data(*spectrum.data)
-        #Update labels
-        self.ax_labels[ind][0].set_text(f"{spectrum.findex}")
-        self.ax_labels[ind][1].set_text(f"{spectrum.position:.2f} mm")
-        #Set background to red (not yet fit)
-        ax.set_facecolor((1,0,0,0.2))
+        if isinstance(spectrum,SPspectrum):
+            # Update plot
+            ax.get_lines()[0].set_data(*spectrum.data)
+            #Set background to red
+            ax.set_facecolor((1,0,0,0.2))
+            #Update labels
+            self.ax_labels[ind][0].set_text(f"{spectrum.findex}")
+            self.ax_labels[ind][1].set_text(f"{spectrum.position:.2f} mm")
+        else:
+            # Update plot
+            ax.get_lines()[0].set_data([-1],[-1])
+            #Set background to white
+            ax.set_facecolor((1,1,1,1))
+            #Update labels
+            self.ax_labels[ind][0].set_text(f"")
+            self.ax_labels[ind][1].set_text(f"")
+
         #Redraw canvas
         self.canvas.draw_idle()
         # self.canvas.flush_events()
@@ -550,7 +589,7 @@ class fittingFrame(tk.Frame):
         #Bottom frame
         self.bottomFrame=tk.Frame(master=self)
         self.bottomFrame.grid(row=2,column=1)
-        tk.Label(self.bottomFrame,text='x lim').grid(row=0,column=5,padx=5,pady=5)
+        tk.Label(self.bottomFrame,text='x-axis limits').grid(row=0,column=5,padx=5,pady=5)
         tk.Entry(self.bottomFrame,textvariable=self.xlim_strings[0],width=8).grid(row=0,column=6,padx=5,pady=5)
         tk.Entry(self.bottomFrame,textvariable=self.xlim_strings[1],width=8).grid(row=0,column=7,padx=5,pady=5)
 
@@ -594,9 +633,13 @@ class fittingFrame(tk.Frame):
                 self.draw_fit()
                 self.span.extents = (spectrum.fit_limits)
             else:
+                #Remove fit plot
                self.fit_line.set_data([-1],[-1])
-        else: 
-            pass
+        else:
+            #Remove data plot
+            self.spectrum_line.set_data([-1],[-1])
+            #Remove fit plot
+            self.fit_line.set_data([-1],[-1])
         self.canvas.draw_idle()
         # self.canvas.flush_events()
         
