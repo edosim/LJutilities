@@ -302,7 +302,7 @@ class streamingGUI(tk.Frame):
     def open_file(self):
         """Opens file dialog to select folder with data."""
         self.streamingPotential.folder_path = tk.filedialog.askdirectory()
-        self.master.dataFrame.folder_label.config(text = self.streamingPotential.folder_path)
+        self.dataFrame.folder_label.config(text = self.streamingPotential.folder_path)
 
 
 
