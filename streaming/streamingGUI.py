@@ -370,11 +370,11 @@ class parametersFrame(tk.Frame):
         self.master = master 
         self.parent = parent
 
-        tk.Label(self,text='Parameters',font=('Helvetica', TITLE_FONT_SIZE,'bold'),bg=self.parent['bg']).grid(row=0,column=0,columnspan=2,padx=10,pady=10, sticky = 'nswe')
-        tk.Label(self,text="s / m",bg=self.parent['bg']).grid(row=1,column=0,padx=5,pady=5,sticky='nse')
-        tk.Label(self,text=f"t0 / ns",bg=self.parent['bg']).grid(row=2,column=0,padx=5,pady=5,sticky='nse')
-        tk.Label(self,text=f"E0 / eV",bg=self.parent['bg']).grid(row=3,column=0,padx=5,pady=5,sticky='nse')
-        tk.Label(self,text="Wavelength / nm",bg=self.parent['bg']).grid(row=4,column=0,padx=5,pady=5,sticky='nse')
+        tk.Label(self,text='Parameters',font=('Helvetica', TITLE_FONT_SIZE,'bold'),bg=self['bg']).grid(row=0,column=0,columnspan=2,padx=10,pady=10, sticky = 'nswe')
+        tk.Label(self,text="s / m",bg=self['bg']).grid(row=1,column=0,padx=5,pady=5,sticky='nse')
+        tk.Label(self,text=f"t0 / ns",bg=self['bg']).grid(row=2,column=0,padx=5,pady=5,sticky='nse')
+        tk.Label(self,text=f"E0 / eV",bg=self['bg']).grid(row=3,column=0,padx=5,pady=5,sticky='nse')
+        tk.Label(self,text="Wavelength / nm",bg=self['bg']).grid(row=4,column=0,padx=5,pady=5,sticky='nse')
 
         tk.Entry(self,width=10,textvariable = self.master.streamingPotential.cal_params_strings[0]).grid(row=1,column=1,pady=5,padx=5,sticky='nsw')
         tk.Entry(self,width=10,textvariable = self.master.streamingPotential.cal_params_strings[1]).grid(row=2,column=1,pady=5,padx=5,sticky='nsw')
@@ -388,25 +388,25 @@ class dataFrame(tk.Frame):
         self.master = master 
         self.parent = parent
 
-        tk.Label(self, text='Data',font=('Helvetica', TITLE_FONT_SIZE,'bold'),bg=self.parent['bg']).grid(row=0,column=0,columnspan=4,padx=10,pady=10, sticky = 'nswe')
+        tk.Label(self, text='Data',font=('Helvetica', TITLE_FONT_SIZE,'bold'),bg=self['bg']).grid(row=0,column=0,columnspan=4,padx=10,pady=10, sticky = 'nswe')
 
         tk.Button(self,text="Folder",command = self.master.open_file,width=8).grid(row=1,column=0,columnspan=2,padx=5,pady=5,sticky='nse')
-        self.folder_label = tk.Label(self,text="",width=25,anchor="e", justify=tk.RIGHT,bg=self.parent['bg'])
+        self.folder_label = tk.Label(self,text="",width=25,anchor="e", justify=tk.RIGHT,bg=self['bg'])
         self.folder_label.grid(row=1,column=2,columnspan=4,padx=5,pady=5,sticky='nsw')
         if self.master.streamingPotential.folder_path:
             self.folder_label.config(text = self.master.streamingPotential.folder_path)
 
-        tk.Label(self,text="Date ",bg=self.parent['bg']).grid(row=2,column=0,columnspan=2,padx=5,pady=5,sticky='nse')
+        tk.Label(self,text="Date ",bg=self['bg']).grid(row=2,column=0,columnspan=2,padx=5,pady=5,sticky='nse')
         tk.Entry(self,width=10,textvariable = self.master.streamingPotential.date).grid(row=2,column=2,columnspan=2,pady=5,padx=5,sticky='nsw')
 
 
-        tk.Label(self,text="Index",bg=self.parent['bg']).grid(row=3,column=1,padx=5,pady=5)
+        tk.Label(self,text="Index",bg=self['bg']).grid(row=3,column=1,padx=5,pady=5)
         for ind,index_string in enumerate(self.master.streamingPotential.file_indices):
             tk.Entry(self,width=10,textvariable = index_string).grid(row=4+ind,column=1,pady=5,padx=5,sticky='nsw')
         autofill_button = tk.Button(self,text = 'V',command=self.master.streamingPotential.autofill_indices)
         autofill_button.grid(row=4,column=0,padx=2.5,pady=5,sticky='nsew')
 
-        tk.Label(self,text="Position / mm",bg=self.parent['bg']).grid(row=3,column=2,padx=5,pady=5)
+        tk.Label(self,text="Position / mm",bg=self['bg']).grid(row=3,column=2,padx=5,pady=5)
         for ind,position_string in enumerate(self.master.streamingPotential.positions_strings):
             tk.Entry(self,width=10,textvariable = position_string).grid(row=4+ind,column=2,pady=5,padx=5,sticky='nsw')
 
@@ -416,7 +416,7 @@ class dataFrame(tk.Frame):
             tk.Button(self,text='Load',command=lambda ind=ind:self.master.streamingPotential.load_file(ind),width=10).grid(row=4+ind,column=3,pady=5,padx=5,sticky='nswe')
         #Loaded?
         for ind in range(MAX_NUM_DATA):
-            label = tk.Label(self,text='X',bg=self.parent['bg'])
+            label = tk.Label(self,text='X',bg=self['bg'])
             label.grid(row=4+ind,column=4,pady=5,padx=5,sticky='nswe')
             self.master.streamingPotential.loaded_confirm_labels.append(label)
 
