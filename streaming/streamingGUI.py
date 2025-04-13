@@ -589,7 +589,7 @@ class fittingFrame(tk.Frame):
         #Bottom frame
         self.bottomFrame=tk.Frame(master=self)
         self.bottomFrame.grid(row=2,column=1)
-        tk.Label(self.bottomFrame,text='x lim').grid(row=0,column=5,padx=5,pady=5)
+        tk.Label(self.bottomFrame,text='x-axis limits').grid(row=0,column=5,padx=5,pady=5)
         tk.Entry(self.bottomFrame,textvariable=self.xlim_strings[0],width=8).grid(row=0,column=6,padx=5,pady=5)
         tk.Entry(self.bottomFrame,textvariable=self.xlim_strings[1],width=8).grid(row=0,column=7,padx=5,pady=5)
 
