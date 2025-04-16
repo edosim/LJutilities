@@ -286,7 +286,7 @@ class streamingGUI(tk.Frame):
         self.saveIcon_image = tk.PhotoImage(file=r"icons\save_20dp_000000_FILL0_wght400_GRAD0_opsz20.png")
         self.saveIcon_image=self.saveIcon_image.subsample(ICON_SUBSAMPLE)
         self.deleteIcon_image = tk.PhotoImage(file=r"icons\delete_30dp_000000_FILL0_wght400_GRAD0_opsz24.png")
-        self.deleteIcon_image=self.deleteIcon_image.subsample(1)
+        self.deleteIcon_image=self.deleteIcon_image.subsample(ICON_SUBSAMPLE)
 
         #Configure grid
         # self.columnconfigure(0, weight=1)
