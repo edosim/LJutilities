@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.signal import find_peaks
 
 MASS_ELECTRON = 0.51099895e6 # eV
 LIGHTSPEED = 299792458e-9 #m/ns
@@ -17,6 +18,12 @@ def tof2eKE(spectrum,cal_params):
     spectrum[1] = jacobian(spectrum[1],spectrum[0],cal_params[1])
     spectrum[0] = calibration(spectrum[0],*cal_params)
     return spectrum
+
+def find_xe_peak(data):
+    peak_indices,_ = find_peaks(data[1],width=15)
+    xe_peak_index = np.argmax(data[0][peak_indices])
+    xe_peak_index = peak_indices[xe_peak_index]
+    return xe_peak_index
 
 def multiple_gaussians(x, *params):
     """amp, ctr, fwhm"""

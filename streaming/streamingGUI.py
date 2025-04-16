@@ -160,8 +160,11 @@ class streamingPotential:
             return
         #Convert to eKE and apply Jacobian
         data = tof2eKE(data,self.cal_params)
-        #Normalise to height between 2.5 and 5 eV
-        data[1]/=max(data[1][np.logical_and(data[0]>2.5,data[0]<5)])
+        #Remove data below 0 eV and above 5 eV
+        data = data[:,np.logical_and(data[0]>0,data[0]<5)]
+        #Normalise to highest energy peak
+        # data[1]/=max(data[1][np.logical_and(data[0]>2.5,data[0]<5)])
+        data[1] /= data[1][find_xe_peak(data)]
         #Store spectrum
         self.spectra[ind] = SPspectrum(data,pos,self.folder_path,date,findex)
         #Plot spectrum in summary
