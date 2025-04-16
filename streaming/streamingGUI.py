@@ -575,6 +575,10 @@ class fittingFrame(tk.Frame):
         #Initialise lines
         self.spectrum_line, = self.ax.plot(-1,-1,'k')
         self.fit_line, = self.ax.plot(-1,-1,'tab:red')
+        #Initialise text labels
+        self.findex_label = self.ax.text(0.95,0.90,f"",weight='bold',fontsize='large',ha='right',va='center',zorder=100,transform=self.ax.transAxes)
+        self.findex_label.set_bbox(dict(facecolor='white', alpha=0.5, edgecolor='none'))
+        self.position_label = self.ax.text(0.95,0.80,f"",fontsize='large',ha='right',va='center',zorder=100,transform=self.ax.transAxes)
         #Top frame
         self.topFrame = tk.Frame(master=self)
         self.topFrame.grid(row=0,column=0,columnspan=2)
@@ -599,13 +603,14 @@ class fittingFrame(tk.Frame):
 
         #### Span Selector ####
         self.span = SpanSelector(self.ax,
-                            self.onselect,
-                            "horizontal",
-                            useblit=True,
-                            props=dict(alpha=0, facecolor="tab:blue"),
-                            interactive=True,
-                            drag_from_anywhere=True
-                        )
+                                 self.onselect,
+                                 "horizontal",
+                                 useblit=False, #True would prolly be better but it would always be plotted on top of the text
+                                 props=dict(alpha=0, facecolor="tab:blue"),
+                                 interactive=True,
+                                 drag_from_anywhere=True,
+                                 )
+
         self.canvas.mpl_connect('key_press_event', self.span)
         self.canvas.draw_idle()
         self.canvas.flush_events()
@@ -629,6 +634,9 @@ class fittingFrame(tk.Frame):
         spectrum = self.streamingPotential.spectra[ind]
         if isinstance(spectrum,SPspectrum):
             self.spectrum_line.set_data(spectrum.data[0],spectrum.data[1])
+            #Add file labels
+            self.findex_label.set_text(f"{spectrum.findex}")
+            self.position_label.set_text(f"{spectrum.position:.2f} mm")
             if spectrum.fit_params.size != 0:
                 self.draw_fit()
                 self.span.extents = (spectrum.fit_limits)
@@ -640,6 +648,10 @@ class fittingFrame(tk.Frame):
             self.spectrum_line.set_data([-1],[-1])
             #Remove fit plot
             self.fit_line.set_data([-1],[-1])
+            #Remove file labels
+            self.findex_label.set_text(f"")
+            self.position_label.set_text(f"")
+
         self.canvas.draw_idle()
         # self.canvas.flush_events()
         
