@@ -1,3 +1,6 @@
+# Ignore files with "test" in them
+*test*
+
 # hd5f files (these are too large for GitHub for now)
 *.h5
 *.hdf5
