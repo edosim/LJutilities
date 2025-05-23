@@ -4,6 +4,9 @@ from scipy.signal import find_peaks
 MASS_ELECTRON = 0.51099895e6 # eV
 LIGHTSPEED = 299792458e-9 #m/ns
 XE_EBE = 12.131 #xenon
+L = 1.0 #mm, distance from skimmer
+R = 0.01 #mm, radius of jet
+
 
 
 def calibration(t,s,t0,E0):
@@ -38,8 +41,6 @@ def multiple_gaussians(x, *params):
 
 
 def SP_curve(x, wavelength, phi, offset):
-    L = 1.0 #mm, distance from skimmer
-    R = 0.01 #mm, radius of jet
     true_eKE = 3*1239.8/wavelength - XE_EBE
 
     return true_eKE - offset - phi * (np.log((2*L+x)/x)/np.log((2*L+2*x-R)/R))
