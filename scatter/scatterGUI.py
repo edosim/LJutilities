@@ -257,6 +257,14 @@ class photoelectronSpectrum:
 
             ax.plot(self.itpData[0],self.itpData[1],lw=1,c='tab:blue')
 
+            #Remove reference to lines
+            self.master.plotFrame.fitLine = None
+            self.master.plotFrame.retrievedLine = None
+            self.master.plotFrame.guessFitLine = None
+            self.master.plotFrame.guessRetrievedLine = None
+            self.master.plotFrame.retrievedGaussians = None
+            
+            #Set xlims and draw
             self.master.plotFrame.ax.set_xlim(-.5,5)
             self.master.plotFrame.canvas.draw()
 
@@ -635,6 +643,7 @@ class plotFrame(tk.Frame):
         self.guessFitLine = None
         self.guessRetrievedLine = None
         self.retrievedGaussians = None
+        
         ### Initialise toolbar
         self.toolbarFrame=tk.Frame(master=self)
         self.toolbarFrame.grid(row=1,column=0,)
