@@ -42,6 +42,9 @@ MAIN_BUTTON_FONT = ('Helvetica', 9, 'bold')
 MAIN_BUTTON_COLOR = "#dddddd"#"#ced1d7"
 ICON_SUBSAMPLE = 2
 
+#Temporary
+SAVE_SPECTRA = False
+
 #extra
 ALPHABET = list("abcdefghijklmnopqrstuvwxyz")
 alphabet_mesh = np.meshgrid(ALPHABET,ALPHABET)[0]
@@ -248,6 +251,12 @@ class streamingPotential:
 
         print(resultsDic)
 
+        if SAVE_SPECTRA:
+            for i,spectrum in enumerate(self.spectra):
+                if isinstance(spectrum,SPspectrum):
+                    print(f"SPspectrum_{spectrum.position}")
+                    np.savetxt(f"SPspectrum_d_{spectrum.position}.txt",spectrum.data.T,delimiter='\t')
+
         filename = tk.filedialog.asksaveasfile(mode='w',
                                                 initialfile = 'SP_result.yaml',
                                                 defaultextension=".yaml",
@@ -255,6 +264,8 @@ class streamingPotential:
         print(filename.name)
         with open(filename.name, 'w') as file:
             yaml.dump(resultsDic,file,sort_keys=False)
+
+ 
 
 class SPspectrum:
     def __init__(self,data,position,folder,date,findex):
