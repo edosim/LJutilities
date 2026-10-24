@@ -814,11 +814,12 @@ class resultPanelFrame(tk.Frame):
         label.grid(row=0,column=0,padx=5,pady=5, sticky = 'nswe')
         label=tk.Button(self.bottomFrame,command=self.streamingPotential.save_result, image=master.saveIcon_image)
         label.grid(row=0,column=1,padx=5,pady=5, sticky = 'nswe')
-        #Save project
-        label=tk.Label(self.bottomFrame,text='Save project',bg=self['bg'])
-        label.grid(row=0,column=2,padx=5,pady=5, sticky = 'nswe')
-        label=tk.Button(self.bottomFrame, image=master.saveIcon_image)
-        label.grid(row=0,column=3,padx=5,pady=5, sticky = 'nswe')
+
+        #Save project (PLACEHOLDER FOR POSSIBLE FUTURE FEATURE)
+        # label=tk.Label(self.bottomFrame,text='Save project',bg=self['bg'])
+        # label.grid(row=0,column=2,padx=5,pady=5, sticky = 'nswe')
+        # label=tk.Button(self.bottomFrame, image=master.saveIcon_image)
+        # label.grid(row=0,column=3,padx=5,pady=5, sticky = 'nswe')
 
 
 if __name__ =="__main__":
@@ -828,5 +829,5 @@ if __name__ =="__main__":
     streamingFrame.pack()
 
     app.geometry("+60+60")
-    app.wm_title("Streaming")
+    app.wm_title("Streaming potential")
     app.mainloop()
