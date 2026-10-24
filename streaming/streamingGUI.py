@@ -10,7 +10,7 @@ from scipy.optimize import curve_fit
 import yaml
 from ctypes import windll
 
-import time
+from pathlib import Path
 
 if __name__=="__main__":
     # Direct import
@@ -41,6 +41,10 @@ ACCENT_COLOR = '#D9D9D9'
 MAIN_BUTTON_FONT = ('Helvetica', 9, 'bold')
 MAIN_BUTTON_COLOR = "#dddddd"#"#ced1d7"
 ICON_SUBSAMPLE = 2
+
+#Icons path
+ICON_DIR = Path(__file__).resolve().parent.parent / "icons"
+
 
 #extra
 ALPHABET = list("abcdefghijklmnopqrstuvwxyz")
@@ -150,7 +154,7 @@ class streamingPotential:
         #Get file index
         findex = self.file_indices[ind].get()
         try:
-            data = np.genfromtxt(self.folder_path+"\\"+date+findex+f"\\{date}{findex}_SignalBack.txt").T
+            data = np.genfromtxt(Path(self.folder_path) / f"{date}{findex}/{date}{findex}_SignalBack.txt").T
         except FileNotFoundError:
             return
         try:
@@ -286,9 +290,9 @@ class streamingGUI(tk.Frame):
         widgetFont = tk.font.Font(family="Helvetica",size=FONT_SIZE)
         self.option_add("*Font", widgetFont)
         # Symbols/icons
-        self.saveIcon_image = tk.PhotoImage(file=r"icons\save_20dp_000000_FILL0_wght400_GRAD0_opsz20.png")
+        self.saveIcon_image = tk.PhotoImage(file=ICON_DIR / "save_20dp_000000_FILL0_wght400_GRAD0_opsz20.png")
         self.saveIcon_image=self.saveIcon_image.subsample(ICON_SUBSAMPLE)
-        self.deleteIcon_image = tk.PhotoImage(file=r"icons\delete_30dp_000000_FILL0_wght400_GRAD0_opsz24.png")
+        self.deleteIcon_image = tk.PhotoImage(file=ICON_DIR / "delete_30dp_000000_FILL0_wght400_GRAD0_opsz24.png")
         self.deleteIcon_image=self.deleteIcon_image.subsample(ICON_SUBSAMPLE)
 
         #Configure grid
