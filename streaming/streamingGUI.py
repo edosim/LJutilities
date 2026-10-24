@@ -8,7 +8,6 @@ import matplotlib as mpl
 import numpy as np
 from scipy.optimize import curve_fit
 import yaml
-from ctypes import windll
 
 from pathlib import Path
 
@@ -21,9 +20,6 @@ else:
     from .SPfunctions import * 
     from .load_settings import *
 
-
-#fix blurry text
-windll.shcore.SetProcessDpiAwareness(1)
 
 ### Format constants ###
 FONT_SIZE = 9
@@ -826,7 +822,17 @@ class resultPanelFrame(tk.Frame):
         # label.grid(row=0,column=3,padx=5,pady=5, sticky = 'nswe')
 
 
-if __name__ =="__main__":
+if __name__ == "__main__":
+
+    # Fix blurry text on high-DPI Windows screens (not needed elsewhere)
+    import sys
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            ctypes.windll.shcore.SetProcessDpiAwareness(1)
+        except (AttributeError, OSError):
+            pass
+
 
     app = tk.Tk()
     streamingFrame = streamingGUI(app)

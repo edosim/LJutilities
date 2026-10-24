@@ -1,8 +1,18 @@
+import sys
 import tkinter as tk
 from tkinter import ttk
 
 import streaming.streamingGUI as strg
 
+# Fix blurry text on high-DPI Windows screens (not needed elsewhere)
+if sys.platform == "win32":
+    try:
+        import ctypes
+        ctypes.windll.shcore.SetProcessDpiAwareness(1)
+    except (AttributeError, OSError):
+        pass
+
+#Create GUI
 app = tk.Tk()
 app.geometry("+60+60")
 
