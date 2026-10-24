@@ -1,0 +1,34 @@
+<?xml version='1.0' standalone='yes' ?>
+<GXML_Root>
+  <XMLcluster-Jet mems='9'>
+    <FileName type='Path'>C:\Data\191224\191224ah\191224ah.xml</FileName>
+    <TodaysDate type='String'>191224</TodaysDate>
+    <ExperimentName type='String'>Liquid Jet</ExperimentName>
+    <TypeOfExperiment type='String'>&lt;0&gt;</TypeOfExperiment>
+    <Phase type='String'>Liquid</Phase>
+    <AcquistionInfo mems='11'>
+      <AcquiredWith type='String'>U5309A</AcquiredWith>
+      <TOFChannels type='DBL'>8000</TOFChannels>
+      <Resolution type='DBL'>0.5</Resolution>
+      <CollectionTime type='DBL'>300</CollectionTime>
+      <Channels type='DBL'>1</Channels>
+      <TimePerLoop type='DBL'>1000</TimePerLoop>
+      <FilesSaved dim='[1]' type='String'>
+        <String>_SignalBack</String>
+      </FilesSaved>
+      <Laser1nm type='DBL'>0</Laser1nm>
+      <Laser2nm type='DBL'>0</Laser2nm>
+      <Atten1 type='DBL'>0</Atten1>
+      <Atten2 type='DBL'>0</Atten2>
+    </AcquistionInfo>
+    <Chemical type='String'>Water</Chemical>
+    <DelayInfo mems='5'>
+      <Start type='DBL'>0</Start>
+      <End type='DBL'>6E-6</End>
+      <Stepsize type='DBL'>0.15</Stepsize>
+      <Speed type='DBL'>0.015</Speed>
+      <Stage_Info type='String'></Stage_Info>
+    </DelayInfo>
+    <Comments type='String'></Comments>
+  </XMLcluster-Jet>
+</GXML_Root>
