@@ -13,7 +13,7 @@ The streaming potential $\phi_{\mathrm{str}}$ and vacuum-level offset $V_0$ are 
 \mathrm{eKE}_{\mathrm{obs}}(x) = \mathrm{eKE}_{\mathrm{true}} - \phi_{\mathrm{str}} \frac{\ln\left(\displaystyle\frac{2\mathrm{L}+x}{x}\right)} {\ln\left(\displaystyle\frac{2(\mathrm{L}+x)-r}{r}\right)} - V_0,
 ```
 
-where $\mathrm{eKE}_{\mathrm{obs}}(x)$ is the peak eKE when the jet is translated by a distance $x$ away from the interaction region, $\mathrm{eKE}_{\mathrm{true}}$ is the field-free eKE; $\mathrm{L}$ is the distance between the ionisation point and the skimmer and $r$ is the radius of the jet (1.0 mm and 0.01 mm, set in ``streaming/SPfunctions.py``).
+where $`\mathrm{eKE}_{\mathrm{obs}}(x)`$ is the peak eKE when the jet is translated by a distance $x$ away from the interaction region, $`\mathrm{eKE}_{\mathrm{true}}`$ is the field-free eKE; $\mathrm{L}$ is the distance between the ionisation point and the skimmer and $r$ is the radius of the jet (1.0 mm and 0.01 mm, set in ``streaming/SPfunctions.py``).
 
 ## Getting started
 
@@ -28,7 +28,7 @@ python main.py
 
 ## Workflow
 
-![Streaming potential tab of LJutilities](docs/gui.png)
+![Streaming potential tab of LJutilities](docs/GUI.png)
 
 1. **Input parameters**. Input the time-of-flight (TOF) to eKE conversion parameters and the wavelength used in the experiment. Note that the calibration parameters must be input before loading files, and the wavelength can be changed before any spectrum is fit.
 
